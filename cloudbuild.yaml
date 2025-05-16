@@ -1,17 +1,23 @@
+options:
+  logging: CLOUD_LOGGING_ONLY  # Prevents logs bucket errors
+
 steps:
+  # Step 1: Build the Docker image
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/$PROJECT_ID/ml-sales-prediction', '.']
 
+  # Step 2: Push the Docker image to Google Container Registry
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/ml-sales-prediction']
 
+  # Step 3: Deploy the app to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
-      [
-        'run', 'deploy', 'ml-sales-prediction',
-        '--image', 'gcr.io/$PROJECT_ID/ml-sales-prediction',
-        '--region', 'us-central1',
-        '--platform', 'managed',
-        '--allow-unauthenticated'
-      ]
+      - run
+      - deploy
+      - ml-sales-prediction
+      - --image=gcr.io/$PROJECT_ID/ml-sales-prediction
+      - --region=us-central1
+      - --platform=managed
+      - --allow-unauthenticated
