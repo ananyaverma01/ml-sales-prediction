@@ -1,32 +1,32 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/ml-sales-prediction', '.']
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/ml-sales-prediction:$SHORT_SHA', '.']
 
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/ml-sales-prediction']
+    args: ['push', 'gcr.io/$PROJECT_ID/ml-sales-prediction:$SHORT_SHA']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
-      [
-        'run', 'deploy', 'ml-app',
-        '--image', 'gcr.io/$PROJECT_ID/ml-sales-prediction',
-        '--region', 'us-central1',
-        '--platform', 'managed',
-        '--allow-unauthenticated'
-      ]
+      - run
+      - deploy
+      - ml-sales-prediction
+      - --image=gcr.io/$PROJECT_ID/ml-sales-prediction:$SHORT_SHA
+      - --region=us-central1
+      - --platform=managed
+      - --allow-unauthenticated
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
-      [
-        'deploy', 'releases', 'create',
-        'release-$(date +%Y%m%d%H%M%S)',
-        '--region', 'us-central1',
-        '--delivery-pipeline', 'sales-pipeline',
-        '--image', 'gcr.io/$PROJECT_ID/ml-sales-prediction',
-        '--target', 'dev'
-      ]
+      - deploy
+      - releases
+      - create
+      - release-$SHORT_SHA
+      - --delivery-pipeline=sales-ml-pipeline
+      - --region=us-central1
+      - --source=.
+      - --deploy-target=dev
 
 images:
-  - gcr.io/$PROJECT_ID/ml-sales-prediction
+  - 'gcr.io/$PROJECT_ID/ml-sales-prediction:$SHORT_SHA'
