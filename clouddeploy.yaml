@@ -18,5 +18,5 @@ metadata:
   name: dev
 description: Dev environment for sales prediction ML app
 run:
-  location: projects/faa-gcp-training-14-kfa-0808/locations/us-central1
+  location: us-central1
   service: ml-app
