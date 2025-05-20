@@ -2,14 +2,21 @@ apiVersion: deploy.cloud.google.com/v1
 kind: DeliveryPipeline
 metadata:
   name: sales-pipeline
-description: Deployment pipeline for sales prediction app
+description: Pipeline for Sales Prediction ML app with canary rollout
 serialPipeline:
   stages:
     - targetId: dev
       strategy:
         canary:
-          mode: AUTOMATIC_TRAFFIC_CONTROL
           runtimeConfig:
             cloudRun:
               automaticTrafficControl: true
-
+---
+apiVersion: deploy.cloud.google.com/v1
+kind: Target
+metadata:
+  name: dev
+description: Dev environment for sales prediction ML app
+run:
+  location: us-central1
+  service: ml-app
